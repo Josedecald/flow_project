@@ -11,6 +11,7 @@ extends CharacterBody2D
 @onready var vfx_system = $funcions/vfx
 @onready var animation_system: AnimationSystem = $funcions/animations
 @onready var state_machine: StateMachine = $funcions/state_machine
+@onready var knockback: Knockback = $Components/Knockback
 
 func _ready():
 	jump_system.jumped.connect(vfx_system.play_jump)
@@ -23,6 +24,13 @@ func _physics_process(delta):
 		velocity.x,
 		Input.get_axis("move_left","move_rigth") != 0
 	)
+
+	movement.update_stats(flow_system.flow, is_on_floor())
+	jump_system.update_stats(flow_system.flow)
+	dash_system.update_stats(flow_system.flow)
+	slide_system.update_stats(flow_system.flow)
+	wall_jump_system.update_stats(flow_system.flow)
+
 	velocity = dash_system.update(
 		velocity,
 		delta,
@@ -54,7 +62,12 @@ func _physics_process(delta):
 		dash_system.is_dashing
 		or slide_system.is_slide
 		or wall_jump_system.is_walljumping
+		or knockback.is_active
 	)
+
+	if knockback.is_active:
+		velocity += knockback.current_force
+
 	
 	if dash_system.is_dashing:
 		state_machine.set_state(StateMachine.State.DASH)
@@ -99,7 +112,8 @@ func _physics_process(delta):
 
 	animation_system.update(
 		state_machine.current_state,
-		movement.actual_speed
+		movement.actual_speed,
+		!knockback.is_active
 	)
 	
 	attack_system.update(delta)

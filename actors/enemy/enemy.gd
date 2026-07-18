@@ -72,7 +72,11 @@ func _ready():
 	hitbox.hitbox_off()
 	
 func movement(delta: float):
-
+	
+	if knockback.is_active:
+		velocity += knockback.current_force
+		return
+		
 	var target_speed := move_direction * move_speed
 
 	if move_direction != 0:
@@ -110,6 +114,9 @@ func change_state(new_state: State):
 
 	if current_state == new_state:
 		return
+
+	if current_state == State.ATTACK:
+		hitbox.hitbox_off()
 
 	previous_state = current_state
 	current_state = new_state

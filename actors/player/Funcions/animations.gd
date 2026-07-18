@@ -8,9 +8,10 @@ class_name AnimationSystem
 var is_facing_right := true
 
 
-func update(state: StateMachine.State, actual_speed: float):
-
-	update_flip()
+func update(state: StateMachine.State, actual_speed: float, allow_flip:bool = true):
+	
+	if allow_flip:
+		update_flip()
 
 	match state:
 

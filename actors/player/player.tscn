@@ -362,6 +362,8 @@ position = Vector2(0, 22)
 visible = false
 collision_layer = 1024
 collision_mask = 0
+monitoring = false
+monitorable = false
 
 [node name="Hurtbox" parent="Components" index="2"]
 collision_layer = 0

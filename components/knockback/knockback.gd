@@ -19,4 +19,5 @@ func _physics_process(delta):
 	
 
 func apply(direction: Vector2, force: float):
-	pass
+	current_force = direction.normalized() * force
+	is_active = true
