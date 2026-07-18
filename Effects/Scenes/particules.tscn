@@ -1,0 +1,127 @@
+[gd_scene load_steps=15 format=3 uid="uid://rvnxxsptrmu6"]
+
+[ext_resource type="Script" path="res://Effects/Scenes/particules.gd" id="1_d1tot"]
+[ext_resource type="Texture2D" uid="uid://c5kdlhu6fnpst" path="res://Effects/Smoke Effect 01/VFX 2 Separated frames/Smoke VFX B2.png" id="2_l8orc"]
+
+[sub_resource type="Curve" id="Curve_x2hun"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_c3mug"]
+curve = SubResource("Curve_x2hun")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_uw2tt"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(10, 0, 0)
+emission_shape = 1
+emission_sphere_radius = 1.0
+angle_min = -120.0
+angle_max = 260.6
+gravity = Vector3(0, 10, 0)
+scale_min = 0.1
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_c3mug")
+
+[sub_resource type="Curve" id="Curve_8xttn"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.985507, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_qv4yq"]
+curve = SubResource("Curve_8xttn")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_c8h3n"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(1, 15, 0)
+emission_shape = 1
+emission_sphere_radius = 2.08
+spread = 180.0
+initial_velocity_max = 20.99
+linear_accel_min = 38.85
+linear_accel_max = 38.85
+scale_min = 0.1
+scale_max = 0.3
+scale_curve = SubResource("CurveTexture_qv4yq")
+turbulence_noise_strength = 7.15
+turbulence_noise_scale = 8.55
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_d06w3"]
+particle_flag_disable_z = true
+gravity = Vector3(0, 0, 0)
+scale_min = 0.1
+scale_max = 0.5
+
+[sub_resource type="Curve" id="Curve_ymu6a"]
+min_value = -200.0
+max_value = 200.0
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_uttk7"]
+curve = SubResource("Curve_ymu6a")
+
+[sub_resource type="Curve" id="Curve_o8jpq"]
+_data = [Vector2(0.0057971, 1), 0.0, 0.0, 0, 0, Vector2(0.46087, 0.291714), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_7bdyd"]
+curve = SubResource("Curve_o8jpq")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_hj1s4"]
+particle_flag_disable_z = true
+emission_shape_scale = Vector3(1, 0, 1)
+emission_shape = 1
+emission_sphere_radius = 1.0
+angle_min = -7.49999
+angle_max = 9.50001
+direction = Vector3(0, -1, 0)
+initial_velocity_min = 100.57
+initial_velocity_max = 100.57
+gravity = Vector3(0, -1, 0)
+radial_accel_curve = SubResource("CurveTexture_uttk7")
+tangential_accel_min = -26.51
+tangential_accel_max = 13.91
+scale_min = 0.0
+scale_max = 0.3
+scale_curve = SubResource("CurveTexture_7bdyd")
+
+[node name="particules" type="Node2D"]
+script = ExtResource("1_d1tot")
+
+[node name="jump" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 25
+process_material = SubResource("ParticleProcessMaterial_uw2tt")
+texture = ExtResource("2_l8orc")
+lifetime = 0.5
+one_shot = true
+speed_scale = 3.0
+explosiveness = 0.8
+randomness = 0.9
+
+[node name="wall_land" type="GPUParticles2D" parent="."]
+visible = false
+emitting = false
+amount = 14
+process_material = SubResource("ParticleProcessMaterial_c8h3n")
+texture = ExtResource("2_l8orc")
+lifetime = 0.1
+speed_scale = 0.2
+explosiveness = 0.4
+randomness = 0.54
+
+[node name="slide" type="GPUParticles2D" parent="."]
+visible = false
+process_material = SubResource("ParticleProcessMaterial_d06w3")
+texture = ExtResource("2_l8orc")
+lifetime = 0.5
+explosiveness = 0.1
+randomness = 0.85
+
+[node name="landing" type="GPUParticles2D" parent="."]
+emitting = false
+process_material = SubResource("ParticleProcessMaterial_hj1s4")
+texture = ExtResource("2_l8orc")
+lifetime = 0.1
+one_shot = true
+speed_scale = 0.37
+randomness = 1.0

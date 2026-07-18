@@ -1,0 +1,19 @@
+[gd_scene load_steps=6 format=3 uid="uid://chksdr2j4qkfe"]
+
+[ext_resource type="PackedScene" uid="uid://b2xuop5sf7si4" path="res://components/flash/flash.tscn" id="1_8dcwg"]
+[ext_resource type="PackedScene" uid="uid://cw1idpoxe0rii" path="res://components/health/health.tscn" id="2_cjewu"]
+[ext_resource type="PackedScene" uid="uid://dw8mewgxc2f4r" path="res://components/hitbox/hitbox.tscn" id="3_xx8sp"]
+[ext_resource type="PackedScene" uid="uid://bfxy4tf8k6cyo" path="res://components/hurtbox/hurtbox.tscn" id="4_xyk2a"]
+[ext_resource type="PackedScene" uid="uid://g5y3k1k8aybu" path="res://components/knockback/knockback.tscn" id="5_n55e4"]
+
+[node name="Components" type="Node2D"]
+
+[node name="Flash" parent="." instance=ExtResource("1_8dcwg")]
+
+[node name="Hitbox" parent="." instance=ExtResource("3_xx8sp")]
+
+[node name="Hurtbox" parent="." instance=ExtResource("4_xyk2a")]
+
+[node name="Knockback" parent="." instance=ExtResource("5_n55e4")]
+
+[node name="Health" parent="." instance=ExtResource("2_cjewu")]

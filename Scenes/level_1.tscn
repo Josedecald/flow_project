@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3 uid="uid://37c17ffm73mx"]
+
+[ext_resource type="Script" path="res://Scripts/camera_2d.gd" id="1_o00v3"]
+[ext_resource type="PackedScene" uid="uid://c07cx4qta6jjb" path="res://actors/player/player.tscn" id="1_vk57k"]
+[ext_resource type="PackedScene" uid="uid://dxttdk7v0lew6" path="res://Scenes/barra progreso.tscn" id="1_xfk5q"]
+[ext_resource type="PackedScene" uid="uid://dqbv7mq54hajh" path="res://actors/enemy/walker/walker.tscn" id="4_j52a2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0og5w"]
+size = Vector2(77, 404)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mq6sv"]
+size = Vector2(2882.25, 20)
+
+[node name="Level1" type="Node2D"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_speed = 15.0
+script = ExtResource("1_o00v3")
+
+[node name="CanvasLayer" parent="." instance=ExtResource("1_xfk5q")]
+
+[node name="Player" parent="." instance=ExtResource("1_vk57k")]
+position = Vector2(104, 175)
+
+[node name="obstacule" type="StaticBody2D" parent="."]
+position = Vector2(655, 222)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="obstacule"]
+position = Vector2(393, -191)
+shape = SubResource("RectangleShape2D_0og5w")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="obstacule"]
+position = Vector2(251, -266)
+shape = SubResource("RectangleShape2D_0og5w")
+
+[node name="ground" type="StaticBody2D" parent="."]
+position = Vector2(13, 244)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ground"]
+position = Vector2(1334.88, 0)
+shape = SubResource("RectangleShape2D_mq6sv")
+
+[node name="walker" parent="." instance=ExtResource("4_j52a2")]
+position = Vector2(976, 66)
+scale = Vector2(3, 3)
+attack_range = 90.0
+
+[editable path="CanvasLayer"]
+[editable path="Player"]
+[editable path="Player/Components"]
+[editable path="Player/Components/Hurtbox"]

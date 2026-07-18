@@ -1,0 +1,33 @@
+[gd_scene load_steps=7 format=3 uid="uid://be1w4qxxioo1n"]
+
+[ext_resource type="Script" path="res://Scenes/sandbox/combat_test.gd" id="1_0ueeo"]
+[ext_resource type="Texture2D" uid="uid://bv6hs2kdenxl3" path="res://icon.svg" id="2_ckv8u"]
+[ext_resource type="PackedScene" uid="uid://cw1idpoxe0rii" path="res://components/health/health.tscn" id="3_cpga6"]
+[ext_resource type="PackedScene" uid="uid://bfxy4tf8k6cyo" path="res://components/hurtbox/hurtbox.tscn" id="4_d3c6o"]
+[ext_resource type="PackedScene" uid="uid://dw8mewgxc2f4r" path="res://components/hitbox/hitbox.tscn" id="5_y5imc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qw3co"]
+
+[node name="CombatTest" type="Node2D"]
+script = ExtResource("1_0ueeo")
+
+[node name="Dummy" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Dummy"]
+texture = ExtResource("2_ckv8u")
+
+[node name="Health" parent="Dummy" instance=ExtResource("3_cpga6")]
+
+[node name="Hurtbox" parent="Dummy" instance=ExtResource("4_d3c6o")]
+position = Vector2(13, 12)
+
+[node name="Sword" type="Node2D" parent="."]
+position = Vector2(16, -20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sword"]
+position = Vector2(61, 38)
+shape = SubResource("RectangleShape2D_qw3co")
+
+[node name="Hitbox" parent="Sword" instance=ExtResource("5_y5imc")]
+position = Vector2(-12, 31)
+damage = 25

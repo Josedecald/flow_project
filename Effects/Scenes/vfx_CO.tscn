@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://blagjgdirwmx7"]
+
+[ext_resource type="Texture2D" uid="uid://c2t0ehu8h22te" path="res://Effects/Smoke FX Lite Zip 5.25.23/SmokeFX Lite SpriteSheet 2A-2.png" id="1_qarr5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_srtqg"]
+atlas = ExtResource("1_qarr5")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_32gdg"]
+atlas = ExtResource("1_qarr5")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kdqcy"]
+atlas = ExtResource("1_qarr5")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_57gtw"]
+atlas = ExtResource("1_qarr5")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_08w5j"]
+atlas = ExtResource("1_qarr5")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7qq7f"]
+atlas = ExtResource("1_qarr5")
+region = Rect2(320, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l7ac3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_srtqg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_32gdg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kdqcy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_57gtw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_08w5j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7qq7f")
+}],
+"loop": false,
+"name": &"slide_vfx",
+"speed": 10.0
+}]
+
+[node name="animations" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_l7ac3")
+animation = &"slide_vfx"
+frame_progress = 1.0
