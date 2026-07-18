@@ -101,7 +101,6 @@ func update_direction() -> void:
 	pass
 
 func _on_health_changed(current_health: int, max_health: int):
-	print("SE LLAMÓ HIT EN: ", owner.get_path() if owner else name, " -> ", current_health)
 	flash.flash()
 
 	if current_state != State.DEAD:
@@ -109,6 +108,8 @@ func _on_health_changed(current_health: int, max_health: int):
 
 func _on_died():
 	pass
+
+signal state_changed(previous: State, current: State)
 
 func change_state(new_state: State):
 
@@ -120,6 +121,8 @@ func change_state(new_state: State):
 
 	previous_state = current_state
 	current_state = new_state
+
+	state_changed.emit(previous_state, current_state)
 
 	enter_state()
 

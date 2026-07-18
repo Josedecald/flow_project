@@ -86,3 +86,8 @@ attack={
 textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"
 environment/defaults/default_clear_color=Color(0.156863, 0.301961, 0.301961, 1)
+
+[autoload]
+
+HitStop="*res://Scripts/hit_stop.gd"
+DebugOverlay="*res://Scripts/debug_overlay.gd"

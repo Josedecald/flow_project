@@ -16,6 +16,12 @@ extends CharacterBody2D
 func _ready():
 	jump_system.jumped.connect(vfx_system.play_jump)
 
+	flow_system.flow_changed.connect(func(f): movement.update_stats(f, is_on_floor()))
+	flow_system.flow_changed.connect(jump_system.update_stats)
+	flow_system.flow_changed.connect(dash_system.update_stats)
+	flow_system.flow_changed.connect(slide_system.update_stats)
+	flow_system.flow_changed.connect(wall_jump_system.update_stats)
+
 func _physics_process(delta):
 
 	flow_system.update_flow(
@@ -24,12 +30,6 @@ func _physics_process(delta):
 		velocity.x,
 		Input.get_axis("move_left","move_rigth") != 0
 	)
-
-	movement.update_stats(flow_system.flow, is_on_floor())
-	jump_system.update_stats(flow_system.flow)
-	dash_system.update_stats(flow_system.flow)
-	slide_system.update_stats(flow_system.flow)
-	wall_jump_system.update_stats(flow_system.flow)
 
 	velocity = dash_system.update(
 		velocity,
@@ -117,3 +117,9 @@ func _physics_process(delta):
 	)
 	
 	attack_system.update(delta)
+
+	DebugOverlay.set_value("flow", roundf(flow_system.flow))
+	DebugOverlay.set_value("state", StateMachine.State.keys()[state_machine.current_state])
+	DebugOverlay.set_value("velocity", velocity)
+	DebugOverlay.set_value("knockback_active", knockback.is_active)
+	DebugOverlay.set_value("on_floor", is_on_floor())
