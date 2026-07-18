@@ -8,10 +8,9 @@ class_name AnimationSystem
 var is_facing_right := true
 
 
-func update(state: StateMachine.State, actual_speed: float, allow_flip:bool = true):
-	
-	if allow_flip:
-		update_flip()
+func update(state: StateMachine.State, actual_speed: float, input_dir: float = 0.0):
+
+	update_flip(input_dir)
 
 	match state:
 
@@ -67,12 +66,12 @@ func update_speed(actual_speed: float):
 			animated_sprite.speed_scale = 1.0
 
 
-func update_flip():
+func update_flip(input_dir: float):
 
-	if player.velocity.x == 0:
+	if input_dir == 0:
 		return
 
-	var facing := player.velocity.x > 0
+	var facing := input_dir > 0
 
 	if facing != is_facing_right:
 		is_facing_right = facing

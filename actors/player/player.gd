@@ -66,7 +66,7 @@ func _physics_process(delta):
 	)
 
 	if knockback.is_active:
-		velocity += knockback.current_force
+		velocity = knockback.current_force
 
 	
 	if dash_system.is_dashing:
@@ -113,7 +113,7 @@ func _physics_process(delta):
 	animation_system.update(
 		state_machine.current_state,
 		movement.actual_speed,
-		!knockback.is_active
+		Input.get_axis("move_left", "move_rigth")
 	)
 	
 	attack_system.update(delta)

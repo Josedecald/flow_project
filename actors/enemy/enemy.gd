@@ -74,7 +74,7 @@ func _ready():
 func movement(delta: float):
 	
 	if knockback.is_active:
-		velocity += knockback.current_force
+		velocity = knockback.current_force
 		return
 		
 	var target_speed := move_direction * move_speed

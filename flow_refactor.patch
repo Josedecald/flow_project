@@ -1,0 +1,106 @@
+diff --git a/actors/enemy/enemy.gd b/actors/enemy/enemy.gd
+index b424e20..2ac9499 100644
+--- a/actors/enemy/enemy.gd
++++ b/actors/enemy/enemy.gd
+@@ -74,7 +74,7 @@ func _ready():
+ func movement(delta: float):
+ 	
+ 	if knockback.is_active:
+-		velocity += knockback.current_force
++		velocity = knockback.current_force
+ 		return
+ 		
+ 	var target_speed := move_direction * move_speed
+@@ -101,7 +101,6 @@ func update_direction() -> void:
+ 	pass
+ 
+ func _on_health_changed(current_health: int, max_health: int):
+-	print("SE LLAMÓ HIT EN: ", owner.get_path() if owner else name, " -> ", current_health)
+ 	flash.flash()
+ 
+ 	if current_state != State.DEAD:
+@@ -110,6 +109,8 @@ func _on_health_changed(current_health: int, max_health: int):
+ func _on_died():
+ 	pass
+ 
++signal state_changed(previous: State, current: State)
++
+ func change_state(new_state: State):
+ 
+ 	if current_state == new_state:
+@@ -121,6 +122,8 @@ func change_state(new_state: State):
+ 	previous_state = current_state
+ 	current_state = new_state
+ 
++	state_changed.emit(previous_state, current_state)
++
+ 	enter_state()
+ 
+ func update_state(delta: float):
+diff --git a/actors/player/player.gd b/actors/player/player.gd
+index 9af6038..462e6a6 100644
+--- a/actors/player/player.gd
++++ b/actors/player/player.gd
+@@ -16,6 +16,12 @@ extends CharacterBody2D
+ func _ready():
+ 	jump_system.jumped.connect(vfx_system.play_jump)
+ 
++	flow_system.flow_changed.connect(func(f): movement.update_stats(f, is_on_floor()))
++	flow_system.flow_changed.connect(jump_system.update_stats)
++	flow_system.flow_changed.connect(dash_system.update_stats)
++	flow_system.flow_changed.connect(slide_system.update_stats)
++	flow_system.flow_changed.connect(wall_jump_system.update_stats)
++
+ func _physics_process(delta):
+ 
+ 	flow_system.update_flow(
+@@ -25,12 +31,6 @@ func _physics_process(delta):
+ 		Input.get_axis("move_left","move_rigth") != 0
+ 	)
+ 
+-	movement.update_stats(flow_system.flow, is_on_floor())
+-	jump_system.update_stats(flow_system.flow)
+-	dash_system.update_stats(flow_system.flow)
+-	slide_system.update_stats(flow_system.flow)
+-	wall_jump_system.update_stats(flow_system.flow)
+-
+ 	velocity = dash_system.update(
+ 		velocity,
+ 		delta,
+@@ -66,7 +66,7 @@ func _physics_process(delta):
+ 	)
+ 
+ 	if knockback.is_active:
+-		velocity += knockback.current_force
++		velocity = knockback.current_force
+ 
+ 	
+ 	if dash_system.is_dashing:
+@@ -113,7 +113,13 @@ func _physics_process(delta):
+ 	animation_system.update(
+ 		state_machine.current_state,
+ 		movement.actual_speed,
+-		!knockback.is_active
++		Input.get_axis("move_left", "move_rigth")
+ 	)
+ 	
+ 	attack_system.update(delta)
++
++	DebugOverlay.set_value("flow", roundf(flow_system.flow))
++	DebugOverlay.set_value("state", StateMachine.State.keys()[state_machine.current_state])
++	DebugOverlay.set_value("velocity", velocity)
++	DebugOverlay.set_value("knockback_active", knockback.is_active)
++	DebugOverlay.set_value("on_floor", is_on_floor())
+diff --git a/project.godot b/project.godot
+index 9139f05..afdfe04 100644
+--- a/project.godot
++++ b/project.godot
+@@ -86,3 +86,8 @@ attack={
+ textures/canvas_textures/default_texture_filter=0
+ rendering_device/driver.windows="d3d12"
+ environment/defaults/default_clear_color=Color(0.156863, 0.301961, 0.301961, 1)
++
++[autoload]
++
++HitStop="*res://Scripts/hit_stop.gd"
++DebugOverlay="*res://Scripts/debug_overlay.gd"
