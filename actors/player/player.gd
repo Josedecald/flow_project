@@ -204,6 +204,7 @@ func _physics_process(delta: float) -> void:
 	DebugOverlay.set_value("velocity", velocity)
 	DebugOverlay.set_value("knockback_active", knockback.is_active)
 	DebugOverlay.set_value("on_floor", is_on_floor())
+	DebugOverlay.set_value('Gravity', gravity)
 
 	debug()
 # ============================================================
@@ -218,7 +219,7 @@ func update_flow(delta: float, on_floor: bool, velocity_x: float, input_pressed:
 
 func _apply_flow_decay(delta: float, velocity_x: float) -> void:
 	if abs(velocity_x) < 20:
-		flow -= 20 * delta
+		flow -= 2 * delta
 	else:
 		flow -= 2 * delta
 
@@ -342,7 +343,7 @@ func _calculate_gravity(velocity_y: float) -> float:
 			return gravity * apex_gravity_multiplier  # Más flotación en el apex
 		if !Input.is_action_pressed("jump"):
 			return gravity * jump_cut_multiplier  # Salto corto
-		return gravity * 0.8  # Gravedad reducida mientras mantienes el salto
+		return gravity * 0.9  # Gravedad reducida mientras mantienes el salto
 	elif velocity_y > 0:  # Bajando
 		return gravity * fall_gravity_multiplier
 	return gravity
