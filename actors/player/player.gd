@@ -81,7 +81,9 @@ signal slided
 @export var slide_speed := 400.0
 @export var slide_speed_max := 700.0
 @export var slide_duration := 0.30
-@export var slide_flow_required := 67.0
+@export var slide_flow_required := 40.0
+@export var dash_flow_cost := 30.0
+@export var attack_flow_cost := 30.0
 
 var actual_slide_speed := 0.0
 var is_slide := false
@@ -218,20 +220,17 @@ func update_flow(delta: float, on_floor: bool, velocity_x: float, input_pressed:
 
 
 func _apply_flow_decay(delta: float, velocity_x: float) -> void:
+	# Solo decae naturalmente cuando no estás moviéndote
 	if abs(velocity_x) < 20:
-		flow -= 2 * delta
-	else:
-		flow -= 2 * delta
+		flow = move_toward(flow, 0, 10 * delta)
 
 
 func _apply_flow_gain(delta: float, on_floor: bool, velocity_x: float, input_pressed: bool) -> void:
-	if not on_floor:
+	# Solo ganas flow cuando corres y estás en el suelo
+	if not on_floor or not input_pressed:
 		return
-	if not input_pressed:
-		return
-	if abs(velocity_x) < 10:
-		return
-	flow += 5 * delta
+	if abs(velocity_x) > 100:
+		flow = move_toward(flow, 100, 15 * delta)
 
 
 func add_flow(value: float) -> void:
@@ -354,10 +353,11 @@ func _calculate_gravity(velocity_y: float) -> float:
 # ============================================================
 func update_dash(velocity: Vector2, delta: float, can_dash: bool) -> Vector2:
 
-	if can_dash and !is_dashing and Input.is_action_just_pressed("ui_dash"):
+	if can_dash and !is_dashing and Input.is_action_just_pressed("ui_dash") and flow >= dash_flow_cost:
 		is_dashing = true
 		dash_timer = 0.0
 		velocity.x = actual_dash if is_facing_right else -actual_dash
+		flow -= dash_flow_cost
 		dashed.emit()
 
 	if is_dashing:
@@ -468,7 +468,9 @@ func update_attack(delta: float) -> void:
 
 	if !is_attacking \
 	and attack_cooldown_timer <= 0 \
-	and Input.is_action_pressed("attack"):
+	and Input.is_action_pressed("attack") \
+	and flow >= attack_flow_cost:
+		flow -= attack_flow_cost
 		_start_attack()
 
 	if is_attacking:
