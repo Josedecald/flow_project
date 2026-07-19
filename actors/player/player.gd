@@ -92,7 +92,9 @@ var slide_timer := 0.0
 #  HURT / DEATH
 # ============================================================
 var hurt_timer: float = 0.0
-var invulnerability_time: float = 0.15
+var invulnerability_time: float = 1.0  # 1 segundo de invulnerabilidad
+@export var hit_flash_duration: float = 0.1
+@export var hit_flash_count: int = 3
 var previous_state_before_hurt: State = State.IDLE
 # ============================================================
 #  WALL JUMP
