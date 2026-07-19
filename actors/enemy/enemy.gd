@@ -8,6 +8,7 @@ class_name Enemy
 @onready var knockback: Knockback = $Components/Knockback
 @onready var hitbox: Hitbox = $Components/Hitbox
 @onready var playerdetector: Area2D = $Graphics/PlayerDetector
+@onready var graphics: Node2D = $Graphics
 
 var sprite_anim:AnimatedSprite2D
 
