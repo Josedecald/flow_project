@@ -96,10 +96,10 @@ signal wall_jumped
 
 @export var wall_jump_x := 300.0
 @export var wall_jump_x_max := 500.0
-@export var wall_jump_y := -350.0  # Más vertical para mejor sensación
-@export var wall_jump_y_max := -550.0
-@export var wall_jump_duration := 0.2  # Más corto para más rapidez
-@export var wall_jump_control_multiplier := 0.4  # Menos control para más impulso
+@export var wall_jump_y := -300.0  # Igualado al salto normal
+@export var wall_jump_y_max := -500.0
+@export var wall_jump_duration := 0.25  # Ligero aumento para mejor control
+@export var wall_jump_control_multiplier := 0.5  # Más control aéreo
 @export var wall_slide_speed := 150.0  # Más rápido al deslizar
 @export var wall_slide_accel := 600.0  # Aceleración más rápida
 
@@ -340,10 +340,10 @@ func _update_coyote(delta: float, on_floor: bool) -> void:
 func _calculate_gravity(velocity_y: float) -> float:
 	if velocity_y < 0:  # Subiendo
 		if abs(velocity_y) <= apex_velocity_threshold:
-			return gravity * apex_gravity_multiplier  # Más flotación en el apex
+			return gravity * apex_gravity_multiplier
 		if !Input.is_action_pressed("jump"):
-			return gravity * jump_cut_multiplier  # Salto corto
-		return gravity * 0.9  # Gravedad reducida mientras mantienes el salto
+			return gravity * jump_cut_multiplier
+		return gravity * 0.8  # Gravedad consistentemente reducida
 	elif velocity_y > 0:  # Bajando
 		return gravity * fall_gravity_multiplier
 	return gravity
