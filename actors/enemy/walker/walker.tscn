@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://dqbv7mq54hajh"]
+[gd_scene load_steps=59 format=3 uid="uid://dqbv7mq54hajh"]
 
 [ext_resource type="PackedScene" uid="uid://chksdr2j4qkfe" path="res://components/Components.tscn" id="1_ssoqj"]
 [ext_resource type="Script" path="res://actors/enemy/walker/walker.gd" id="1_wbti1"]
@@ -364,6 +364,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qoaps"]
 size = Vector2(278, 55)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4jna7"]
+size = Vector2(46, 42)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_neq46"]
 radius = 23.0
 
@@ -377,10 +380,12 @@ attack_range = 30.0
 [node name="Graphics" type="Node2D" parent="."]
 
 [node name="WallRay" type="RayCast2D" parent="Graphics"]
+visible = false
 position = Vector2(0, 17)
 target_position = Vector2(24, 0)
 
 [node name="GroundRay" type="RayCast2D" parent="Graphics"]
+visible = false
 position = Vector2(25, 10)
 target_position = Vector2(0, 26)
 
@@ -391,15 +396,23 @@ frame = 3
 frame_progress = 0.559208
 
 [node name="PlayerDetector" type="Area2D" parent="Graphics"]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/PlayerDetector"]
 position = Vector2(59, 4.5)
 shape = SubResource("RectangleShape2D_qoaps")
 debug_color = Color(0.562432, 0.527394, 0.515473, 0.42)
 
+[node name="AttackRange" type="Area2D" parent="Graphics"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graphics/AttackRange"]
+position = Vector2(13, 11)
+shape = SubResource("RectangleShape2D_4jna7")
+
 [node name="Components" parent="." instance=ExtResource("1_ssoqj")]
 
 [node name="Hitbox" parent="Components" index="1"]
+visible = false
 position = Vector2(15, 12)
 collision_layer = 512
 collision_mask = 0
@@ -414,6 +427,7 @@ collision_layer = 0
 collision_mask = 1024
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(-0.5, 17)
 shape = SubResource("RectangleShape2D_lw53k")
 

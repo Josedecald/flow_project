@@ -8,8 +8,12 @@ class_name Walker
 @onready var ground_ray: RayCast2D = $Graphics/GroundRay
 @onready var wall_ray: RayCast2D = $Graphics/WallRay
 @onready var camera = $"../Camera2D"
+@onready var attack_range_area: Area2D = $Graphics/AttackRange
 
+var player_in_attack_range: bool = false
 
+func _process(delta: float) -> void:
+	print(current_state)
 
 func _ready() -> void:
 
@@ -24,6 +28,8 @@ func _ready() -> void:
 	}
 	set_direction(start_direction)
 	change_state(State.PATROL)
+	attack_range_area.body_entered.connect(_on_attack_range_body_entered)
+	attack_range_area.body_exited.connect(_on_attack_range_body_exited)
 
 func enter_patrol():
 	pass
@@ -40,27 +46,23 @@ func check_chase():
 	if player == null:
 		return
 	
-	if check_attack_range():
-
-		if current_state != State.ATTACK:
-			change_state(State.ATTACK)
-
+	if player_in_attack_range:
 		return
 	
 	if global_position.x > player.global_position.x:
 		set_direction(-1)
 	else:
 		set_direction(1)
-		
-func check_attack_range() -> bool:
-	if player == null:
-		return false
-		
-	var distancia: float = global_position.distance_to(player.global_position)
 	
-	if distancia > attack_range:
-		return false
-	return true
+func _on_attack_range_body_entered(body: Node2D) -> void:
+	if body.is_in_group("Player"):
+		player_in_attack_range = true
+		change_state(State.ATTACK)
+
+func _on_attack_range_body_exited(body: Node2D) -> void:
+	if body.is_in_group("Player"):
+		player_in_attack_range = false
+		change_state(State.CHASE)
 	
 func check_patrol():
 
@@ -81,8 +83,7 @@ func set_direction(direction: int) -> void:
 	facing_direction = direction
 
 func state_attack(delta):
-	if not check_attack_range():
-		change_state(State.CHASE)
+	pass
 
 func state_patrol(delta):
 	check_patrol()
@@ -105,7 +106,7 @@ func _on_animated_sprite_2d_animation_finished(anim_name):
 		change_state(State.PATROL)
 		return
 
-	if check_attack_range():
+	if player_in_attack_range:
 		change_state(State.ATTACK)
 	else:
 		change_state(State.CHASE)
