@@ -746,28 +746,27 @@ func update_slide_vfx() -> void:
 		slide_vfx.visible = false
 
 func _on_hit(hitbox: Hitbox) -> void:
-	if health.is_dead() or current_state == State.HURT:
-		return
+	if _can_take_damage():
+		_apply_damage_effects(hitbox)
+		change_state(State.HURT)
+		_start_invulnerability()
 
-	# Aplicar daño
+func _can_take_damage() -> bool:
+	return not health.is_dead() and current_state != State.HURT
+
+func _apply_damage_effects(hitbox: Hitbox) -> void:
 	health.take_damage(hitbox.damage)
-	
-	# Efecto visual
 	flash.start_flash()
-	
-	# Aplicar knockback
+	_apply_knockback(hitbox)
+	flow = max(flow - 30, 0)
+
+func _apply_knockback(hitbox: Hitbox) -> void:
 	var direction = (global_position - hitbox.global_position).normalized()
 	if direction.is_zero_approx():
 		direction = Vector2.RIGHT if is_facing_right else Vector2.LEFT
 	knockback.apply(direction, hitbox.knockback_force)
 
-	# Reducir Flow
-	flow = max(flow - 30, 0)
-
-	# Cambiar a estado HURT
-	change_state(State.HURT)
-	
-	# Invulnerabilidad temporal
+func _start_invulnerability() -> void:
 	hurtbox.set_deferred("monitoring", false)
 	await get_tree().create_timer(invulnerability_time).timeout
 	hurtbox.monitoring = true
