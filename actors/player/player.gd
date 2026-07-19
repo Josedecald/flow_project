@@ -44,7 +44,7 @@ signal jumped
 @export var jump_release_multiplier := 2.0
 @export var fall_gravity_multiplier := 2.0  # Gravedad más consistente
 @export var apex_velocity_threshold := 80.0  # Mayor margen para el apex
-@export var apex_gravity_multiplier := 0.5  # Flotación balanceada
+@export var apex_gravity_multiplier := 0.9 # Flotación balanceada
 @export var jump_buffer_time := 0.12
 @export var coyote_time := 0.10
 @export var jump_cut_multiplier := 0.6  # Menos brusco al soltar
@@ -88,7 +88,12 @@ signal slided
 var is_slide := false
 var slide_timer := 0.0
 
-
+# ============================================================
+#  HURT / DEATH
+# ============================================================
+var hurt_timer: float = 0.0
+var invulnerability_time: float = 0.15
+var previous_state_before_hurt: State = State.IDLE
 # ============================================================
 #  WALL JUMP
 # ============================================================
@@ -124,7 +129,7 @@ var attack_active_timer := 0.0
 #  ESTADO / ANIMACIÓN
 # ============================================================
 enum State {
-	IDLE, WALK, RUN, SPRINT, JUMP, FALL, ON_WALL, DASH, SLIDE, WALL_JUMP, ATTACK
+	IDLE, WALK, RUN, SPRINT, JUMP, FALL, ON_WALL, DASH, SLIDE, WALL_JUMP, ATTACK, HURT, DEAD
 }
 
 signal state_changed(previous, current)
@@ -156,11 +161,19 @@ var last_y := 0.0
 @onready var hitbox: Hitbox = $Components/Hitbox
 @onready var knockback: Knockback = $Components/Knockback
 @onready var camera = $"../Camera2D"
+@onready var health: Health = $Components/Health
+@onready var hurtbox: Hurtbox = $Components/Hurtbox
+@onready var flash: Flash = $Components/Flash  # Si usas el componente existente
 
 
 func _ready() -> void:
 	sprite_scale = animated_sprite.scale
 	target_sprite_scale = sprite_scale
+	health.died.connect(_on_died)
+	hurtbox.hit.connect(_on_hit)
+
+	# Conectar fin de animación para muerte
+	animated_sprite.animation_finished.connect(_on_animation_finished)
 
 
 # ============================================================
@@ -171,17 +184,18 @@ func _physics_process(delta: float) -> void:
 
 	update_flow(delta, is_on_floor(), velocity.x, get_input_direction() != 0)
 	update_stats()
+	
+	if current_state != State.HURT and current_state != State.DEAD:
+		velocity = update_dash(velocity, delta, !is_slide)
+		velocity = update_slide(velocity, delta, !is_dashing)
+		velocity = update_wall_jump(velocity, delta, is_on_floor())
 
-	velocity = update_dash(velocity, delta, !is_slide)
-	velocity = update_slide(velocity, delta, !is_dashing)
-	velocity = update_wall_jump(velocity, delta, is_on_floor())
+		velocity.y = update_jump(velocity.y, delta, is_on_floor(), is_walljumping)
 
-	velocity.y = update_jump(velocity.y, delta, is_on_floor(), is_walljumping)
-
-	velocity.x = update_move(
-		velocity.x,
-		is_dashing or is_slide or is_walljumping or knockback.is_active
-	)
+		velocity.x = update_move(
+			velocity.x,
+			is_dashing or is_slide or is_walljumping or knockback.is_active
+		)
 
 	if knockback.is_active:
 		velocity = knockback.current_force
@@ -189,7 +203,13 @@ func _physics_process(delta: float) -> void:
 	update_state()
 
 	move_and_slide()
-
+	
+	if current_state == State.HURT:
+		hurt_timer -= delta
+		if hurt_timer <= 0.0 and not health.is_dead():
+			# Volver al estado anterior (el que teníamos antes de ser golpeados)
+			change_state(previous_state_before_hurt)
+	
 	update_landing()
 	update_slide_vfx()
 	update_animation(get_input_direction())
@@ -335,7 +355,7 @@ func _calculate_gravity(velocity_y: float) -> float:
 			return gravity * apex_gravity_multiplier
 		if !Input.is_action_pressed("jump"):
 			return gravity * jump_cut_multiplier
-		return gravity * 0.8  # Gravedad consistentemente reducida
+		return gravity  # Gravedad consistentemente reducida
 	elif velocity_y > 0:  # Bajando
 		return gravity * fall_gravity_multiplier
 	return gravity
@@ -373,7 +393,7 @@ func update_slide(velocity: Vector2, delta: float, can_slide: bool) -> Vector2:
 	and Input.is_action_just_pressed("ui_slide"):
 
 		_start_slide()
-		velocity.x = actual_slide_speed if is_facing_right else -actual_slide_speed
+		velocity.x = slide_speed if is_facing_right else -slide_speed
 		slided.emit()
 
 	if is_slide:
@@ -413,8 +433,8 @@ func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector
 		var dir := -1 if wall_collision_right.is_colliding() else 1
 		
 		# Aplicar fuerza inicial
-		velocity.x = dir * actual_wall_jump_x
-		velocity.y = actual_wall_jump_y
+		velocity.x = dir * wall_jump_x
+		velocity.y = wall_jump_y
 		
 		is_facing_right = dir > 0
 		graphics.scale.x = abs(graphics.scale.x) * dir
@@ -437,7 +457,7 @@ func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector
 		
 		# Permitir control mínimo
 		if input_dir != 0:
-			var control_dir := input_dir * actual_wall_jump_x * wall_jump_control_multiplier
+			var control_dir := input_dir * wall_jump_x * wall_jump_control_multiplier
 			velocity.x = move_toward(velocity.x, control_dir, actual_acceleration * 2 * delta)
 		
 		# Finalizar walljump
@@ -490,7 +510,18 @@ func _end_attack() -> void:
 #  ESTADO (decide qué animación corresponde este frame)
 # ============================================================
 func update_state() -> void:
+	 
+	if health.is_dead():
+		_set_state(State.DEAD)
+		return
+		
+	if current_state == State.HURT:
+		return
 
+	if is_attacking:
+		_set_state(State.ATTACK)
+		return
+	
 	if is_dashing:
 		_set_state(State.DASH)
 
@@ -531,12 +562,71 @@ func _set_state(state: State, force: bool = false) -> void:
 	var previous = current_state
 	current_state = state
 	state_changed.emit(previous, current_state)
+	enter_state()
 
+func enter_state() -> void:
+	match current_state:
+		State.IDLE:      enter_idle()
+		State.WALK:      enter_walk()
+		State.RUN:       enter_run()
+		State.SPRINT:    enter_sprint()
+		State.JUMP:      enter_jump()
+		State.FALL:      enter_fall()
+		State.ON_WALL:   enter_on_wall()
+		State.DASH:      enter_dash()
+		State.SLIDE:     enter_slide()
+		State.WALL_JUMP: enter_wall_jump()
+		State.ATTACK:    enter_attack()
+		State.HURT:      enter_hurt()
+		State.DEAD:      enter_dead()
+		
+func enter_idle():      pass
+func enter_walk():      pass
+func enter_run():       pass
+func enter_sprint():    pass
+func enter_jump():      pass
+func enter_fall():      pass
+func enter_on_wall():   pass
+func enter_dash():      pass
+func enter_slide():     pass
+func enter_wall_jump(): pass
+func enter_attack():    pass
 
 func is_state(state: State) -> bool:
 	return current_state == state
 
+func enter_hurt() -> void:
+	hurt_timer = invulnerability_time
+	# Opcional: puedes detener el movimiento bruscamente
+	# velocity = Vector2.ZERO
+	
+func enter_dead() -> void:
+	# Desactivar colisiones y componentes
+	set_physics_process(false)  # opcional, o simplemente detener movimiento
+	hitbox.hitbox_off()
+	# También podrías desactivar el hurtbox para que no reciba más daño
+	hurtbox.monitoring = false
+	hurtbox.monitorable = false
+	# La animación "die" se reproducirá, y al terminar reiniciaremos la escena
 
+func change_state(new_state: State) -> void:
+	if current_state == new_state:
+		return
+
+	# Si estamos saliendo de ATTACK, apagar hitbox
+	if current_state == State.ATTACK:
+		hitbox.hitbox_off()
+
+	# Guardar el estado anterior ANTES de cambiar (para volver después de HURT)
+	if new_state == State.HURT:
+		previous_state_before_hurt = current_state
+
+	# Ejecutar el cambio
+	var previous = current_state
+	current_state = new_state
+	state_changed.emit(previous, current_state)
+	enter_state()
+	
 # ============================================================
 #  ANIMACIÓN (reproduce el sprite correcto para el estado actual)
 # ============================================================
@@ -556,6 +646,8 @@ func update_animation(input_dir: float) -> void:
 		State.SLIDE: animated_sprite.play("slide")
 		State.WALL_JUMP: animated_sprite.play("jump")
 		State.ATTACK: animated_sprite.play("attack")
+		State.HURT: animated_sprite.play("hurt")
+		State.DEAD: animated_sprite.play("die")
 
 	_update_animation_speed()
 
@@ -577,7 +669,7 @@ func _update_animation_speed() -> void:
 ## El sprite solo voltea según hacia dónde apretás — nunca por knockback,
 ## dash, walljump ni rebotes contra una pared.
 func _update_flip(input_dir: float) -> void:
-	if is_walljumping:
+	if current_state in [State.HURT, State.DEAD, State.WALL_JUMP]:
 		return
 		
 	if input_dir == 0:
@@ -643,7 +735,34 @@ func update_slide_vfx() -> void:
 		slide_vfx.play("slide_vfx")
 	else:
 		slide_vfx.visible = false
-		
+
+func _on_hit(hitbox: Hitbox) -> void:
+	if health.is_dead():
+		return
+
+	# Aplicar knockback
+	if knockback:
+		var direction = (global_position - hitbox.global_position)
+		if direction.is_zero_approx():
+			direction = Vector2.RIGHT
+		knockback.apply(direction, hitbox.knockback_force)
+
+	# Reducir Flow
+	flow = max(flow - 30, 0)
+
+	# Cambiar a estado HURT (la señal health_changed ya llamará a flash)
+	change_state(State.HURT)
+
+
+func _on_died() -> void:
+	change_state(State.DEAD)
+
 func debug():
 	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_PAGEDOWN):
 		flow = 100.0
+
+
+func _on_animation_finished() -> void:
+	if animated_sprite.animation == "die":
+			# Reiniciar la escena (o mostrar pantalla de game over)
+			get_tree().reload_current_scene()
