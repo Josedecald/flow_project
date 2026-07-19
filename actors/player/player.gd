@@ -507,11 +507,7 @@ func _start_attack() -> void:
 	is_attacking = true
 	attack_cooldown_timer = attack_cooldown
 	attack_active_timer = attack_active_time
-	
-	# Asegurar que el hitbox tenga la dirección correcta
-	hitbox.scale.x = graphics.scale.x
 	hitbox.hitbox_on()
-	
 	attack_started.emit()
 
 
@@ -684,7 +680,7 @@ func _update_animation_speed() -> void:
 ## El sprite solo voltea según hacia dónde apretás — nunca por knockback,
 ## dash, walljump ni rebotes contra una pared.
 func _update_flip(input_dir: float) -> void:
-	if current_state in [State.HURT, State.DEAD, State.WALL_JUMP, State.ATTACK]:
+	if current_state in [State.HURT, State.DEAD, State.WALL_JUMP]:
 		return
 		
 	if input_dir == 0:
