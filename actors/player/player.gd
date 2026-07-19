@@ -39,15 +39,15 @@ var actual_turn_acceleration: float
 signal jumped
 
 @export var gravity := 980.0
-@export var jump_speed := 250.0
-@export var jump_speed_max := 400.0
+@export var jump_speed := 300.0
+@export var jump_speed_max := 500.0
 @export var jump_release_multiplier := 2.0
-@export var fall_gravity_multiplier := 2.5
-@export var apex_velocity_threshold := 60.0
-@export var apex_gravity_multiplier := 0.4  # Más flotación en el apex
+@export var fall_gravity_multiplier := 2.0  # Gravedad más consistente
+@export var apex_velocity_threshold := 80.0  # Mayor margen para el apex
+@export var apex_gravity_multiplier := 0.5  # Flotación balanceada
 @export var jump_buffer_time := 0.12
 @export var coyote_time := 0.10
-@export var jump_cut_multiplier := 0.5  # Para saltos más cortos al soltar rápido
+@export var jump_cut_multiplier := 0.6  # Menos brusco al soltar
 
 var actual_jump := 0.0
 var actual_gravity := 0.0
