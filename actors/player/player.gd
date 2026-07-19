@@ -166,7 +166,7 @@ var last_y := 0.0
 @onready var health: Health = $Components/Health
 @onready var hurtbox: Hurtbox = $Components/Hurtbox
 @onready var flash: Flash = $Components/Flash
-@onready var health_bar: ProgressBar = $HealthBar  # Asegúrate que el nodo tiene este nombre
+@onready var health_bar: ProgressBar = $HealthBar # Asegúrate que el nodo tiene este nombre
 
 
 func _ready() -> void:
@@ -180,9 +180,8 @@ func _ready() -> void:
 	animated_sprite.animation_finished.connect(_on_animation_finished)
 	
 	# Inicializar barra de salud
-	if health_bar:
-		health_bar.max_value = health.max_health
-		health_bar.value = health.current_health
+	health_bar.max_value = health.max_health
+	health_bar.value = health.current_health
 
 
 # ============================================================
@@ -230,6 +229,7 @@ func _physics_process(delta: float) -> void:
 	DebugOverlay.set_value("knockback_active", knockback.is_active)
 	DebugOverlay.set_value("on_floor", is_on_floor())
 	DebugOverlay.set_value('Gravity', gravity)
+	DebugOverlay.set_value('Health', health.current_health)
 
 	debug()
 # ============================================================
