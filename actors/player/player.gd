@@ -44,9 +44,10 @@ signal jumped
 @export var jump_release_multiplier := 2.0
 @export var fall_gravity_multiplier := 2.5
 @export var apex_velocity_threshold := 60.0
-@export var apex_gravity_multiplier := 0.6
+@export var apex_gravity_multiplier := 0.4  # Más flotación en el apex
 @export var jump_buffer_time := 0.12
 @export var coyote_time := 0.10
+@export var jump_cut_multiplier := 0.5  # Para saltos más cortos al soltar rápido
 
 var actual_jump := 0.0
 var actual_gravity := 0.0
@@ -95,9 +96,12 @@ signal wall_jumped
 
 @export var wall_jump_x := 200.0
 @export var wall_jump_x_max := 350.0
-@export var wall_jump_y := -300.0
-@export var wall_jump_y_max := -500.0
-@export var wall_jump_duration := 0.5
+@export var wall_jump_y := -280.0  # Un poco menos vertical
+@export var wall_jump_y_max := -450.0
+@export var wall_jump_duration := 0.3  # Más corto para más control
+@export var wall_jump_control_multiplier := 0.6  # Control durante walljump
+@export var wall_slide_speed := 100.0  # Velocidad máxima al deslizar
+@export var wall_slide_accel := 400.0  # Aceleración al deslizar
 
 var actual_wall_jump_x := 0.0
 var actual_wall_jump_y := 0.0
@@ -333,13 +337,13 @@ func _update_coyote(delta: float, on_floor: bool) -> void:
 
 
 func _calculate_gravity(velocity_y: float) -> float:
-	if velocity_y < 0:
+	if velocity_y < 0:  # Subiendo
 		if abs(velocity_y) <= apex_velocity_threshold:
-			return gravity * apex_gravity_multiplier
-		if Input.is_action_pressed("jump"):
-			return gravity
-		return gravity * jump_release_multiplier
-	if velocity_y > 0:
+			return gravity * apex_gravity_multiplier  # Más flotación en el apex
+		if !Input.is_action_pressed("jump"):
+			return gravity * jump_cut_multiplier  # Salto corto
+		return gravity * 0.8  # Gravedad reducida mientras mantienes el salto
+	elif velocity_y > 0:  # Bajando
 		return gravity * fall_gravity_multiplier
 	return gravity
 
@@ -405,32 +409,39 @@ func _stop_slide() -> void:
 #  WALL JUMP
 # ============================================================
 func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector2:
-
+	# Wall Slide - deslizar por la pared
 	if is_touching_wall() and !on_floor:
-		velocity.y = min(velocity.y, 30)
+		velocity.y = min(velocity.y, wall_slide_speed)
+		velocity.y = move_toward(velocity.y, wall_slide_speed, wall_slide_accel * delta)
 
+	# Wall Jump
 	if is_touching_wall() and !on_floor and Input.is_action_just_pressed("jump"):
-
 		var dir := -1 if wall_collision_right.is_colliding() else 1
-
+		
+		# Aplicar fuerza inicial
 		velocity.x = dir * actual_wall_jump_x
 		velocity.y = actual_wall_jump_y
-
+		
 		is_facing_right = dir > 0
 		graphics.scale.x = abs(graphics.scale.x) * dir
-		# Forzar la dirección durante todo el walljump
 		_set_state(State.WALL_JUMP, true)
-
+		
 		is_walljumping = true
 		wall_jump_timer = 0.0
-
 		wall_jumped.emit()
 
+	# Control durante walljump
 	if is_walljumping:
 		wall_jump_timer += delta
-		if wall_jump_timer >= wall_jump_duration:
-			is_walljumping = false
-		if is_touching_wall() and wall_jump_timer > 0.1:
+		var input_dir := get_input_direction()
+		
+		# Permitir cierto control aéreo
+		if input_dir != 0:
+			var control_dir := input_dir * actual_wall_jump_x * wall_jump_control_multiplier
+			velocity.x = move_toward(velocity.x, control_dir, actual_acceleration * delta)
+		
+		# Finalizar walljump
+		if wall_jump_timer >= wall_jump_duration or (is_touching_wall() and wall_jump_timer > 0.1):
 			is_walljumping = false
 
 	return velocity
