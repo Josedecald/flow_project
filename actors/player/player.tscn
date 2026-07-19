@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3 uid="uid://c07cx4qta6jjb"]
+[gd_scene load_steps=65 format=3 uid="uid://c07cx4qta6jjb"]
 
 [ext_resource type="Script" path="res://actors/player/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://bhicjyjkkolio" path="res://Sprites/Pixel Prototype Player/Sprites/Dash/Dash01.png" id="2_uw31l"]
@@ -54,17 +54,6 @@
 [ext_resource type="Texture2D" uid="uid://cbup753cmra22" path="res://Sprites/Pixel Prototype Player/Sprites/Walk/Walk08.png" id="37_awhv4"]
 [ext_resource type="PackedScene" uid="uid://blagjgdirwmx7" path="res://Effects/Scenes/vfx_CO.tscn" id="52_pp1wl"]
 [ext_resource type="PackedScene" uid="uid://chksdr2j4qkfe" path="res://components/Components.tscn" id="54_n01j5"]
-[ext_resource type="Script" path="res://actors/player/Funcions/move.gd" id="55_4nuro"]
-[ext_resource type="Script" path="res://actors/player/Funcions/jump.gd" id="56_p4ed3"]
-[ext_resource type="Script" path="res://actors/player/Funcions/dash.gd" id="57_l5xdo"]
-[ext_resource type="Script" path="res://actors/player/Funcions/slide.gd" id="58_j71km"]
-[ext_resource type="Script" path="res://actors/player/Funcions/wall_jump.gd" id="59_mkf7y"]
-[ext_resource type="Script" path="res://actors/player/Funcions/attack.gd" id="60_xqsub"]
-[ext_resource type="Script" path="res://actors/player/Funcions/flow.gd" id="61_recoh"]
-[ext_resource type="Script" path="res://actors/player/Funcions/animations.gd" id="62_qe2ke"]
-[ext_resource type="Script" path="res://actors/player/Funcions/landing.gd" id="63_5ar3j"]
-[ext_resource type="Script" path="res://actors/player/Funcions/vfx.gd" id="64_0xb7a"]
-[ext_resource type="Script" path="res://actors/player/Funcions/state_machine.gd" id="65_dtyrv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f60y1"]
 size = Vector2(14, 40)
@@ -389,44 +378,6 @@ offset_left = -57.0
 offset_top = -41.0
 offset_right = -34.0
 offset_bottom = -3.0
-
-[node name="funcions" type="Node" parent="."]
-
-[node name="Move" type="Node" parent="funcions"]
-script = ExtResource("55_4nuro")
-
-[node name="jump" type="Node" parent="funcions"]
-script = ExtResource("56_p4ed3")
-
-[node name="dash" type="Node" parent="funcions"]
-script = ExtResource("57_l5xdo")
-
-[node name="slide" type="Node" parent="funcions"]
-script = ExtResource("58_j71km")
-
-[node name="wall_jump" type="Node" parent="funcions"]
-script = ExtResource("59_mkf7y")
-
-[node name="attack" type="Node" parent="funcions"]
-script = ExtResource("60_xqsub")
-
-[node name="flow" type="Node" parent="funcions"]
-script = ExtResource("61_recoh")
-
-[node name="animations" type="Node" parent="funcions"]
-script = ExtResource("62_qe2ke")
-
-[node name="landing" type="Node" parent="funcions"]
-script = ExtResource("63_5ar3j")
-
-[node name="vfx" type="Node" parent="funcions"]
-script = ExtResource("64_0xb7a")
-
-[node name="state_machine" type="Node" parent="funcions"]
-script = ExtResource("65_dtyrv")
-
-[connection signal="item_rect_changed" from="." to="." method="_on_item_rect_changed"]
-[connection signal="renamed" from="." to="." method="_on_renamed"]
 
 [editable path="Components"]
 [editable path="Components/Hurtbox"]

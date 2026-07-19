@@ -1,7 +1,6 @@
 extends Camera2D
 
 @onready var player: CharacterBody2D = $"../Player"
-@onready var flow_system: FlowSystem = $"../Player/funcions/flow"
 
 var noise: FastNoiseLite
 var noise_y := 0.0
@@ -57,7 +56,7 @@ func camera_shake(delta):
 func zoom_camera(delta):
 
 	var target = remap(
-		clamp(flow_system.flow,0.0,100.0),
+		clamp(player.flow,0.0,100.0),
 		0.0,
 		100.0,
 		zoom_max,
