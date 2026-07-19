@@ -317,6 +317,16 @@ animations = [{
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 3
 script = ExtResource("1_cvnsp")
+move_speed_max = 400.0
+jump_speed = 100.0
+jump_speed_max = 375.0
+apex_gravity_multiplier = 0.8
+wall_jump_x = 150.0
+wall_jump_x_max = 200.0
+wall_jump_y = -50.0
+wall_jump_y_max = -250.0
+wall_jump_duration = 0.6
+wall_slide_speed = 50.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 22)
