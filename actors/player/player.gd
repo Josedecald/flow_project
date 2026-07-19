@@ -1,14 +1,6 @@
 extends CharacterBody2D
 
 # ============================================================
-#  Este script reemplaza a los 11 archivos que antes vivían en
-#  Funcions/. Todo el jugador vive en un solo lugar, ordenado
-#  por sistema. Cada bloque tiene su propia sección: variables
-#  de ese sistema arriba, funciones abajo.
-# ============================================================
-
-
-# ============================================================
 #  FLOW — el ritmo del jugador. Sube moviéndose, baja quieto.
 # ============================================================
 signal flow_changed(flow: float)
@@ -209,7 +201,7 @@ func _physics_process(delta: float) -> void:
 	DebugOverlay.set_value("knockback_active", knockback.is_active)
 	DebugOverlay.set_value("on_floor", is_on_floor())
 
-
+	debug()
 # ============================================================
 #  FLOW
 # ============================================================
@@ -424,6 +416,9 @@ func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector
 		velocity.x = dir * actual_wall_jump_x
 		velocity.y = actual_wall_jump_y
 
+		is_facing_right = dir > 0
+		graphics.scale.x = abs(graphics.scale.x) * dir
+
 		is_walljumping = true
 		wall_jump_timer = 0.0
 
@@ -453,7 +448,7 @@ func update_attack(delta: float) -> void:
 
 	if !is_attacking \
 	and attack_cooldown_timer <= 0 \
-	and Input.is_action_just_pressed("attack"):
+	and Input.is_action_pressed("attack"):
 		_start_attack()
 
 	if is_attacking:
@@ -631,3 +626,7 @@ func update_slide_vfx() -> void:
 		slide_vfx.play("slide_vfx")
 	else:
 		slide_vfx.visible = false
+		
+func debug():
+	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_PAGEDOWN):
+		flow = 100.0
