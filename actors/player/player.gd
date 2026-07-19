@@ -180,8 +180,10 @@ func _ready() -> void:
 	animated_sprite.animation_finished.connect(_on_animation_finished)
 	
 	# Inicializar barra de salud
-	health_bar.max_value = health.max_health
-	health_bar.value = health.current_health
+	if health_bar:
+		health_bar.max_value = health.max_health
+		health_bar.value = health.current_health
+		health_bar.visible = health.current_health > 0
 
 
 # ============================================================
@@ -792,7 +794,11 @@ func debug():
 
 func _update_health_bar() -> void:
 	if health_bar:
-		health_bar.value = health.current_health
+		health_bar.value = max(0, health.current_health)  # Asegurar que no sea negativo
+		if health.current_health <= 0:
+			health_bar.visible = false  # Ocultar barra al morir
+		else:
+			health_bar.visible = true
 
 
 func _on_animation_finished() -> void:

@@ -14,10 +14,9 @@ func take_damage(damage_amount: int):
 	current_health -= damage_amount
 	current_health = clamp(current_health, 0, max_health)
 	
+	health_changed.emit(current_health, max_health)
 	if current_health == 0:
 		died.emit()
-	else:
-		health_changed.emit(current_health, max_health)
 
 func heal(heal_amount: int):
 	current_health += heal_amount
