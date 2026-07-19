@@ -78,14 +78,13 @@ var dash_timer := 0.0
 @export_group("Slide")
 signal slided
 
-@export var slide_speed := 400.0
-@export var slide_speed_max := 700.0
+@export var slide_speed := 500.0  # Velocidad fija
 @export var slide_duration := 0.30
-@export var slide_flow_required := 40.0
+@export var slide_flow_required := 40.0  # Requisito mínimo de flow
 @export var dash_flow_cost := 30.0
 @export var attack_flow_cost := 30.0
 
-var actual_slide_speed := 0.0
+# Slide usa velocidad fija
 var is_slide := false
 var slide_timer := 0.0
 
@@ -96,17 +95,12 @@ var slide_timer := 0.0
 @export_group("Wall Jump")
 signal wall_jumped
 
-@export var wall_jump_x := 300.0
-@export var wall_jump_x_max := 500.0
-@export var wall_jump_y := -300.0  # Igualado al salto normal
-@export var wall_jump_y_max := -500.0
-@export var wall_jump_duration := 0.25  # Ligero aumento para mejor control
-@export var wall_jump_control_multiplier := 0.5  # Más control aéreo
-@export var wall_slide_speed := 150.0  # Más rápido al deslizar
-@export var wall_slide_accel := 600.0  # Aceleración más rápida
-
-var actual_wall_jump_x := 0.0
-var actual_wall_jump_y := 0.0
+@export var wall_jump_x := 400.0  # Valor fijo horizontal
+@export var wall_jump_y := -350.0  # Valor fijo vertical 
+@export var wall_jump_duration := 0.25  # Tiempo fijo
+@export var wall_jump_control_multiplier := 0.6  # Control aéreo
+@export var wall_slide_speed := 120.0  # Velocidad fija
+@export var wall_slide_accel := 500.0  # Aceleración fija
 var is_walljumping := false
 var wall_jump_timer := 0.0
 
@@ -257,10 +251,9 @@ func update_stats() -> void:
 
 	actual_dash = lerp(dash_speed, dash_speed_max, flow / 100.0)
 
-	actual_slide_speed = lerp(slide_speed, slide_speed_max, flow / 100.0)
+	# Slide usa velocidad fija
 
-	actual_wall_jump_x = lerp(wall_jump_x, wall_jump_x_max, flow / 100.0)
-	actual_wall_jump_y = lerp(wall_jump_y, wall_jump_y_max, flow / 100.0)
+	# Walljump usa valores fijos, no depende del flow
 
 
 # ============================================================
