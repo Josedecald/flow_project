@@ -744,21 +744,31 @@ func update_slide_vfx() -> void:
 		slide_vfx.visible = false
 
 func _on_hit(hitbox: Hitbox) -> void:
-	if health.is_dead():
+	if health.is_dead() or current_state == State.HURT:
 		return
 
+	# Aplicar daño
+	health.take_damage(hitbox.damage)
+	
+	# Efecto visual
+	flash.start_flash()
+	
 	# Aplicar knockback
-	if knockback:
-		var direction = (global_position - hitbox.global_position)
-		if direction.is_zero_approx():
-			direction = Vector2.RIGHT
-		knockback.apply(direction, hitbox.knockback_force)
+	var direction = (global_position - hitbox.global_position).normalized()
+	if direction.is_zero_approx():
+		direction = Vector2.RIGHT if is_facing_right else Vector2.LEFT
+	knockback.apply(direction, hitbox.knockback_force)
 
 	# Reducir Flow
 	flow = max(flow - 30, 0)
 
-	# Cambiar a estado HURT (la señal health_changed ya llamará a flash)
+	# Cambiar a estado HURT
 	change_state(State.HURT)
+	
+	# Invulnerabilidad temporal
+	hurtbox.set_deferred("monitoring", false)
+	await get_tree().create_timer(invulnerability_time).timeout
+	hurtbox.monitoring = true
 
 
 func _on_died() -> void:
