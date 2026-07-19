@@ -42,7 +42,7 @@ position = Vector2(1334.88, 0)
 shape = SubResource("RectangleShape2D_mq6sv")
 
 [node name="walker" parent="." instance=ExtResource("4_j52a2")]
-position = Vector2(1604, 405)
+position = Vector2(1454, 97)
 scale = Vector2(3, 3)
 attack_range = 90.0
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=65 format=3 uid="uid://c07cx4qta6jjb"]
+[gd_scene load_steps=77 format=3 uid="uid://c07cx4qta6jjb"]
 
 [ext_resource type="Script" path="res://actors/player/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://bhicjyjkkolio" path="res://Sprites/Pixel Prototype Player/Sprites/Dash/Dash01.png" id="2_uw31l"]
@@ -13,24 +13,36 @@
 [ext_resource type="Texture2D" uid="uid://ttdbhwlftyuw" path="res://Sprites/Pixel Prototype Player/Sprites/Dash/Dash09.png" id="10_42k4p"]
 [ext_resource type="Texture2D" uid="uid://ci8lplg81pbkh" path="res://Sprites/Pixel Prototype Player/Sprites/JumpFall/JumpFall01.png" id="11_ftwlh"]
 [ext_resource type="Texture2D" uid="uid://bbhuda4do4ek" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle01.png" id="12_pyjxy"]
+[ext_resource type="Texture2D" uid="uid://coenkm1ul7o8h" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die01.png" id="13_e2ou7"]
 [ext_resource type="Texture2D" uid="uid://83ihmj0aobx6" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle02.png" id="13_wx5yy"]
+[ext_resource type="Texture2D" uid="uid://xrg4akgl5jup" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die02.png" id="14_d5iqv"]
 [ext_resource type="Texture2D" uid="uid://drdriw2y8lre1" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle03.png" id="14_kij7e"]
+[ext_resource type="Texture2D" uid="uid://d337p0ljposqn" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die03.png" id="15_dwocv"]
 [ext_resource type="Texture2D" uid="uid://c36p7mms8kqgx" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle04.png" id="15_idsmp"]
+[ext_resource type="Texture2D" uid="uid://clvytd22vc6r1" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die04.png" id="16_5m5a4"]
 [ext_resource type="Texture2D" uid="uid://bbgom013hbbes" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle05.png" id="16_tixp2"]
+[ext_resource type="Texture2D" uid="uid://d0nnevnlyg7nw" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die05.png" id="17_4j1m7"]
 [ext_resource type="Texture2D" uid="uid://cm7wr5e7gik6j" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle06.png" id="17_ewf6l"]
 [ext_resource type="Texture2D" uid="uid://cexseryup1fv8" path="res://Sprites/Pixel Prototype Player/Sprites/Idle/Idle07.png" id="18_em8qx"]
+[ext_resource type="Texture2D" uid="uid://ccdp8m3olfbj0" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die06.png" id="18_nedkj"]
 [ext_resource type="Texture2D" uid="uid://ke4a15sf2wyk" path="res://Sprites/Pixel Prototype Player/Sprites/Jump/Jump01.png" id="19_0o8xl"]
+[ext_resource type="Texture2D" uid="uid://djyxyumvt8jri" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die07.png" id="19_pa77a"]
 [ext_resource type="Texture2D" uid="uid://xasta0s1jbpc" path="res://Sprites/Pixel Prototype Player/Sprites/Sprint/Sprint01.png" id="20_vm0jb"]
 [ext_resource type="Texture2D" uid="uid://t5pos5hpsc0v" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run01.png" id="20_wyl5s"]
+[ext_resource type="Texture2D" uid="uid://bo2m6nc81wxj8" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die08.png" id="20_yo1rf"]
 [ext_resource type="Texture2D" uid="uid://cpb26q8kupumm" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run02.png" id="21_3hv4d"]
+[ext_resource type="Texture2D" uid="uid://bsp6hq8tbtwu7" path="res://Sprites/Pixel Prototype Player/Sprites/Die/Die09.png" id="21_ag875"]
 [ext_resource type="Texture2D" uid="uid://c81b5xdc2wexs" path="res://Sprites/Pixel Prototype Player/Sprites/Sprint/Sprint02.png" id="21_f2oyk"]
 [ext_resource type="Texture2D" uid="uid://cfdi6suf3agcy" path="res://Sprites/Pixel Prototype Player/Sprites/Sprint/Sprint03.png" id="22_02ntf"]
 [ext_resource type="Texture2D" uid="uid://cw6vtwskptefy" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run03.png" id="22_murmt"]
+[ext_resource type="Texture2D" uid="uid://ct4y5cd7a23d8" path="res://Sprites/Pixel Prototype Player/Sprites/Combat/Hit/Hit01.png" id="23_a2bv2"]
 [ext_resource type="Texture2D" uid="uid://dkcbeg32bd88a" path="res://Sprites/Pixel Prototype Player/Sprites/Sprint/Sprint04.png" id="23_khg5q"]
 [ext_resource type="Texture2D" uid="uid://bod3l680thcv3" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run04.png" id="23_x1m7k"]
 [ext_resource type="Texture2D" uid="uid://cokcpjum6jq0x" path="res://Sprites/Pixel Prototype Player/Sprites/Sprint/Sprint05.png" id="24_somur"]
 [ext_resource type="Texture2D" uid="uid://duk6cq88gi8e8" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run05.png" id="24_sxltn"]
+[ext_resource type="Texture2D" uid="uid://bbnlf626kb76f" path="res://Sprites/Pixel Prototype Player/Sprites/Combat/Hit/Hit02.png" id="24_wmuhm"]
 [ext_resource type="Texture2D" uid="uid://c1nxjgo27cvbh" path="res://Sprites/Pixel Prototype Player/Sprites/Sprint/Sprint06.png" id="25_38ut4"]
+[ext_resource type="Texture2D" uid="uid://dfs1jwsfbbruk" path="res://Sprites/Pixel Prototype Player/Sprites/Combat/Hit/Hit03.png" id="25_dlk8r"]
 [ext_resource type="Texture2D" uid="uid://dkkmqd44kbyhf" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run06.png" id="25_v2m4x"]
 [ext_resource type="Texture2D" uid="uid://dishhnuu2hckj" path="res://Sprites/Pixel Prototype Player/Sprites/Slide/Slide01.png" id="26_ixxcf"]
 [ext_resource type="Texture2D" uid="uid://doksdabcupo10" path="res://Sprites/Pixel Prototype Player/Sprites/Run/Run07.png" id="26_ww0wr"]
@@ -152,11 +164,57 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("13_e2ou7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_d5iqv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_dwocv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_5m5a4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_4j1m7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_nedkj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_pa77a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_yo1rf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_ag875")
+}],
+"loop": false,
+"name": &"dead",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_iuv1s")
 }],
 "loop": true,
 "name": &"fall",
 "speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("23_a2bv2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_wmuhm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_dlk8r")
+}],
+"loop": true,
+"name": &"hurt",
+"speed": 8.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -318,15 +376,11 @@ animations = [{
 collision_mask = 3
 script = ExtResource("1_cvnsp")
 move_speed_max = 400.0
-jump_speed = 100.0
-jump_speed_max = 375.0
-apex_gravity_multiplier = 0.8
-wall_jump_x = 150.0
-wall_jump_x_max = 200.0
-wall_jump_y = -50.0
-wall_jump_y_max = -250.0
-wall_jump_duration = 0.6
-wall_slide_speed = 50.0
+jump_speed = 150.0
+jump_speed_max = 400.0
+fall_gravity_multiplier = 3.0
+slide_speed = 400.0
+wall_jump_x = 300.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 22)
@@ -350,15 +404,14 @@ target_position = Vector2(0, -37)
 
 [node name="AnimatedSprite" type="AnimatedSprite2D" parent="Graphics"]
 sprite_frames = SubResource("SpriteFrames_wpjfl")
-animation = &"attack"
-frame = 6
+animation = &"dead"
+frame = 8
 frame_progress = 1.0
 
 [node name="Components" parent="." instance=ExtResource("54_n01j5")]
 position = Vector2(0, 22)
 
 [node name="Hitbox" parent="Components" index="1"]
-visible = false
 collision_layer = 1024
 collision_mask = 0
 monitoring = false
@@ -383,11 +436,12 @@ position = Vector2(0, 22)
 target_position = Vector2(-7.5, 0)
 collision_mask = 2
 
-[node name="ProgressBar" type="ProgressBar" parent="."]
+[node name="HealthBar" type="ProgressBar" parent="."]
 offset_left = -57.0
 offset_top = -41.0
 offset_right = -34.0
 offset_bottom = -3.0
+fill_mode = 3
 
 [editable path="Components"]
 [editable path="Components/Hurtbox"]

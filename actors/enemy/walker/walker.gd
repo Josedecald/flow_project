@@ -5,8 +5,6 @@ class_name Walker
 
 @export var start_direction: int = 1
 
-@onready var graphics: Node2D = $Graphics
-
 @onready var ground_ray: RayCast2D = $Graphics/GroundRay
 @onready var wall_ray: RayCast2D = $Graphics/WallRay
 @onready var camera = $"../Camera2D"
