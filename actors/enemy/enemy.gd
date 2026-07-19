@@ -105,10 +105,7 @@ func _on_health_changed(current_health: int, max_health: int):
 	flash.flash()
 
 	if current_state != State.DEAD:
-		# Mantener la dirección actual al recibir daño
-		var current_scale = graphics.scale.x
 		change_state(State.HIT)
-		graphics.scale.x = current_scale  # Restaurar escala después del cambio de estado
 
 func _on_died():
 	pass
@@ -116,11 +113,9 @@ func _on_died():
 signal state_changed(previous: State, current: State)
 
 func change_state(new_state: State):
+
 	if current_state == new_state:
 		return
-
-	# Guardar dirección actual antes del cambio
-	var was_flipped = graphics.scale.x < 0
 
 	if current_state == State.ATTACK:
 		hitbox.hitbox_off()
@@ -129,13 +124,8 @@ func change_state(new_state: State):
 	current_state = new_state
 
 	state_changed.emit(previous_state, current_state)
-	enter_state()
 
-	# Restaurar dirección después de cambiar estados
-	if was_flipped:
-		graphics.scale.x = -abs(graphics.scale.x)
-	else:
-		graphics.scale.x = abs(graphics.scale.x)
+	enter_state()
 
 func update_state(delta: float):
 
@@ -228,11 +218,7 @@ func enter_chase():
 	pass
 
 func enter_attack():
-	if animations.has(State.ATTACK):
-		sprite_anim.play(animations[State.ATTACK])
-		hitbox.hitbox_on()
-		# Asegurar que hitbox tenga misma dirección que sprite
-		hitbox.scale.x = graphics.scale.x
+	pass
 
 func enter_hit():
 	hit_timer  = hit_duration
