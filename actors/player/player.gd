@@ -94,14 +94,14 @@ var slide_timer := 0.0
 @export_group("Wall Jump")
 signal wall_jumped
 
-@export var wall_jump_x := 200.0
-@export var wall_jump_x_max := 350.0
-@export var wall_jump_y := -280.0  # Un poco menos vertical
-@export var wall_jump_y_max := -450.0
-@export var wall_jump_duration := 0.3  # Más corto para más control
-@export var wall_jump_control_multiplier := 0.6  # Control durante walljump
-@export var wall_slide_speed := 100.0  # Velocidad máxima al deslizar
-@export var wall_slide_accel := 400.0  # Aceleración al deslizar
+@export var wall_jump_x := 300.0
+@export var wall_jump_x_max := 500.0
+@export var wall_jump_y := -350.0  # Más vertical para mejor sensación
+@export var wall_jump_y_max := -550.0
+@export var wall_jump_duration := 0.2  # Más corto para más rapidez
+@export var wall_jump_control_multiplier := 0.4  # Menos control para más impulso
+@export var wall_slide_speed := 150.0  # Más rápido al deslizar
+@export var wall_slide_accel := 600.0  # Aceleración más rápida
 
 var actual_wall_jump_x := 0.0
 var actual_wall_jump_y := 0.0
@@ -431,18 +431,24 @@ func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector
 		wall_jump_timer = 0.0
 		wall_jumped.emit()
 
-	# Control durante walljump
+	# Impulso durante walljump
 	if is_walljumping:
 		wall_jump_timer += delta
 		var input_dir := get_input_direction()
 		
-		# Permitir cierto control aéreo
+		# Aplicar gravedad reducida solo al inicio
+		if wall_jump_timer < wall_jump_duration * 0.5:
+			velocity.y += gravity * 0.5 * delta
+		else:
+			velocity.y += gravity * delta
+		
+		# Permitir control mínimo
 		if input_dir != 0:
 			var control_dir := input_dir * actual_wall_jump_x * wall_jump_control_multiplier
-			velocity.x = move_toward(velocity.x, control_dir, actual_acceleration * delta)
+			velocity.x = move_toward(velocity.x, control_dir, actual_acceleration * 2 * delta)
 		
 		# Finalizar walljump
-		if wall_jump_timer >= wall_jump_duration or (is_touching_wall() and wall_jump_timer > 0.1):
+		if wall_jump_timer >= wall_jump_duration:
 			is_walljumping = false
 
 	return velocity
