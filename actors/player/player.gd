@@ -418,6 +418,8 @@ func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector
 
 		is_facing_right = dir > 0
 		graphics.scale.x = abs(graphics.scale.x) * dir
+		# Forzar la dirección durante todo el walljump
+		_set_state(State.WALL_JUMP, true)
 
 		is_walljumping = true
 		wall_jump_timer = 0.0
@@ -510,8 +512,8 @@ func update_state() -> void:
 		_set_state(State.SPRINT)
 
 
-func _set_state(state: State) -> void:
-	if current_state == state:
+func _set_state(state: State, force: bool = false) -> void:
+	if current_state == state and not force:
 		return
 	var previous = current_state
 	current_state = state
@@ -560,9 +562,11 @@ func _update_animation_speed() -> void:
 
 
 ## El sprite solo voltea según hacia dónde apretás — nunca por knockback,
-## dash, ni rebotes contra una pared.
+## dash, walljump ni rebotes contra una pared.
 func _update_flip(input_dir: float) -> void:
-
+	if is_walljumping:
+		return
+		
 	if input_dir == 0:
 		return
 
