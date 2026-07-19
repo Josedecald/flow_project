@@ -163,7 +163,8 @@ var last_y := 0.0
 @onready var camera = $"../Camera2D"
 @onready var health: Health = $Components/Health
 @onready var hurtbox: Hurtbox = $Components/Hurtbox
-@onready var flash: Flash = $Components/Flash  # Si usas el componente existente
+@onready var flash: Flash = $Components/Flash
+@onready var health_bar: ProgressBar = $HealthBar  # Asegúrate que el nodo tiene este nombre
 
 
 func _ready() -> void:
@@ -171,9 +172,15 @@ func _ready() -> void:
 	target_sprite_scale = sprite_scale
 	health.died.connect(_on_died)
 	hurtbox.hit.connect(_on_hit)
+	health.health_changed.connect(_update_health_bar)
 
 	# Conectar fin de animación para muerte
 	animated_sprite.animation_finished.connect(_on_animation_finished)
+	
+	# Inicializar barra de salud
+	if health_bar:
+		health_bar.max_value = health.max_health
+		health_bar.value = health.current_health
 
 
 # ============================================================
@@ -760,6 +767,10 @@ func _on_died() -> void:
 func debug():
 	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_PAGEDOWN):
 		flow = 100.0
+
+func _update_health_bar() -> void:
+	if health_bar:
+		health_bar.value = health.current_health
 
 
 func _on_animation_finished() -> void:
