@@ -748,11 +748,14 @@ func update_slide_vfx() -> void:
 func _on_hit(hitbox: Hitbox) -> void:
 	if _can_take_damage():
 		_apply_damage_effects(hitbox)
-		change_state(State.HURT)
-		_start_invulnerability()
+		if health.is_dead():
+			_on_died()
+		else:
+			change_state(State.HURT)
+			_start_invulnerability()
 
 func _can_take_damage() -> bool:
-	return not health.is_dead() and current_state != State.HURT
+	return not health.is_dead() and current_state != State.HURT and current_state != State.DEAD
 
 func _apply_damage_effects(hitbox: Hitbox) -> void:
 	health.take_damage(hitbox.damage)
@@ -773,7 +776,15 @@ func _start_invulnerability() -> void:
 
 
 func _on_died() -> void:
-	change_state(State.DEAD)
+	if current_state != State.DEAD:  # Evitar múltiples llamados
+		change_state(State.DEAD)
+		# Desactivar completamente al jugador
+		set_physics_process(false)
+		hitbox.hitbox_off()
+		hurtbox.monitoring = false
+		hurtbox.monitorable = false
+		# Forzar animación de muerte
+		animated_sprite.play("die")
 
 func debug():
 	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_PAGEDOWN):
