@@ -8,7 +8,7 @@ var current_health: int
 
 func _ready() -> void:
 	current_health = max_health
-	health_changed.emit(current_health, max_health)
+	health_changed.emit(current_health, max_health)  # Asegurar que se envíen ambos valores
 	
 func take_damage(damage_amount: int):
 	current_health -= damage_amount

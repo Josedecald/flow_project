@@ -174,7 +174,7 @@ func _ready() -> void:
 	target_sprite_scale = sprite_scale
 	health.died.connect(_on_died)
 	hurtbox.hit.connect(_on_hit)
-	health.health_changed.connect(_update_health_bar)
+	health.health_changed.connect(_update_health_bar.bind())
 
 	# Conectar fin de animación para muerte
 	animated_sprite.animation_finished.connect(_on_animation_finished)
@@ -792,13 +792,11 @@ func debug():
 	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_PAGEDOWN):
 		flow = 100.0
 
-func _update_health_bar() -> void:
+func _update_health_bar(current: int, max_health: int) -> void:
 	if health_bar:
-		health_bar.value = max(0, health.current_health)  # Asegurar que no sea negativo
-		if health.current_health <= 0:
-			health_bar.visible = false  # Ocultar barra al morir
-		else:
-			health_bar.visible = true
+		health_bar.max_value = max_health
+		health_bar.value = max(0, current)  # Asegurar que no sea negativo
+		health_bar.visible = current > 0  # Ocultar barra al morir
 
 
 func _on_animation_finished() -> void:
