@@ -103,8 +103,7 @@ func update_direction() -> void:
 func _on_health_changed(current_health: int, max_health: int):
 	flash.flash()
 
-	# Solo cambiar a estado HIT si no está atacando
-	if current_state != State.DEAD and current_state != State.ATTACK:
+	if current_state != State.DEAD:
 		change_state(State.HIT)
 
 func _on_died():
@@ -112,22 +111,19 @@ func _on_died():
 
 signal state_changed(previous: State, current: State)
 
-func change_state(new_state: State, force: bool = false):
-	if current_state == new_state and not force:
+func change_state(new_state: State):
+
+	if current_state == new_state:
 		return
 
-	# Solo desactivar hitbox si realmente estamos saliendo de ATTACK
-	if current_state == State.ATTACK and new_state != State.ATTACK:
+	if current_state == State.ATTACK:
 		hitbox.hitbox_off()
 
-	var previous = current_state
+	previous_state = current_state
 	current_state = new_state
-	
-	# No actualizar previous_state si estamos forzando el cambio (para mantener el estado anterior)
-	if not force:
-		previous_state = previous
 
-	state_changed.emit(previous, current_state)
+	state_changed.emit(previous_state, current_state)
+
 	enter_state()
 
 func update_state(delta: float):
@@ -173,12 +169,7 @@ func state_chase(delta: float):
 
 
 func state_attack(delta: float):
-	# Mantener el estado de ataque hasta que la animación termine
-	if sprite_anim and sprite_anim.is_playing() and sprite_anim.animation == animations[State.ATTACK]:
-		return
-	
-	# Volver al estado anterior cuando termine la animación
-	change_state(previous_state)
+	pass
 
 
 func state_hit(delta: float):
@@ -226,9 +217,7 @@ func enter_chase():
 	pass
 
 func enter_attack():
-	if animations.has(State.ATTACK):
-		sprite_anim.play(animations[State.ATTACK])
-		hitbox.hitbox_on()  # Activar hitbox al inicio del ataque
+	pass
 
 func enter_hit():
 	hit_timer  = hit_duration
