@@ -118,13 +118,25 @@ var wall_jump_timer := 0.0
 @export_group("Ataque")
 signal attack_started
 signal attack_finished
+signal combo_changed(combo_count: int)
 
-@export var attack_cooldown := 0.30
+@export var attack_cooldown := 0.20
 @export var attack_active_time := 0.10
+@export var base_attack_damage := 10
+
+# Staccato — ventana de ritmo entre golpes consecutivos
+@export var staccato_min_interval := 0.60  # más rápido que esto = spam, no cuenta
+@export var staccato_max_interval := 0.90   # más lento que esto = se corta el combo
+@export var staccato_damage_step := 0.15    # +15% de daño por golpe de combo
+@export var staccato_max_combo := 4
 
 var is_attacking := false
 var attack_cooldown_timer := 0.0
 var attack_active_timer := 0.0
+
+var combo_count := 0
+var combo_multiplier := 1.0
+var time_since_last_attack := 999.0
 
 
 # ============================================================
@@ -168,6 +180,10 @@ var last_y := 0.0
 @onready var flash: Flash = $Components/Flash
 @onready var health_bar: ProgressBar = $HealthBar # Asegúrate que el nodo tiene este nombre
 
+signal music_flow_updated(flow: float)
+signal music_combo_hit(combo: int, multiplier: float)
+signal music_state_changed(state: String)
+signal music_damage_taken()
 
 func _ready() -> void:
 	sprite_scale = animated_sprite.scale
@@ -184,7 +200,12 @@ func _ready() -> void:
 		health_bar.max_value = health.max_health
 		health_bar.value = health.current_health
 		health_bar.visible = health.current_health > 0
-
+	
+	# Conectar con el AudioManager (que debe estar registrado como Autoload)
+	AudioManager.connect_signals(self)
+	# Opcional: enviar el estado inicial
+	AudioManager.update_flow(flow)
+	AudioManager.set_state(State.keys()[current_state])
 
 # ============================================================
 #  LOOP PRINCIPAL — el orden acá importa, es la secuencia real
@@ -232,6 +253,7 @@ func _physics_process(delta: float) -> void:
 	DebugOverlay.set_value("on_floor", is_on_floor())
 	DebugOverlay.set_value('Gravity', gravity)
 	DebugOverlay.set_value('Health', health.current_health)
+	DebugOverlay.set_value("combo", combo_count)
 
 	debug()
 # ============================================================
@@ -242,13 +264,12 @@ func update_flow(delta: float, on_floor: bool, velocity_x: float, input_pressed:
 	_apply_flow_gain(delta, on_floor, velocity_x, input_pressed)
 	flow = clamp(flow, 0, 100)
 	flow_changed.emit(flow)
-
+	AudioManager.update_flow(flow)  
 
 func _apply_flow_decay(delta: float, velocity_x: float) -> void:
 	# Solo decae naturalmente cuando no estás moviéndote
 	if abs(velocity_x) < 20:
 		flow = move_toward(flow, 0, 10 * delta)
-
 
 func _apply_flow_gain(delta: float, on_floor: bool, velocity_x: float, input_pressed: bool) -> void:
 	# Solo ganas flow cuando corres y estás en el suelo
@@ -257,11 +278,9 @@ func _apply_flow_gain(delta: float, on_floor: bool, velocity_x: float, input_pre
 	if abs(velocity_x) > 100:
 		flow = move_toward(flow, 100, 15 * delta)
 
-
 func add_flow(value: float) -> void:
 	flow += value
 	flow_boost.emit()
-
 
 ## Recalcula, a partir del Flow actual, los valores "reales" que usa cada
 ## sistema (velocidad de dash real, salto real, etc). Se llama una vez
@@ -477,24 +496,27 @@ func update_wall_jump(velocity: Vector2, delta: float, on_floor: bool) -> Vector
 
 	return velocity
 
-
 func is_touching_wall() -> bool:
 	return wall_collision_right.is_colliding() or wall_collision_left.is_colliding()
-
 
 # ============================================================
 #  ATAQUE
 # ============================================================
 func update_attack(delta: float) -> void:
 
+	time_since_last_attack += delta
+
+	# Si pasó demasiado tiempo sin golpear, el combo se corta solo
+	if combo_count > 0 and time_since_last_attack > staccato_max_interval:
+		_reset_combo()
+
 	if attack_cooldown_timer > 0:
 		attack_cooldown_timer -= delta
 
 	if !is_attacking \
 	and attack_cooldown_timer <= 0 \
-	and Input.is_action_pressed("attack") \
-	and flow >= attack_flow_cost:
-		flow -= attack_flow_cost
+	and Input.is_action_just_pressed("attack"):
+		_register_staccato_hit()
 		_start_attack()
 
 	if is_attacking:
@@ -503,10 +525,30 @@ func update_attack(delta: float) -> void:
 			_end_attack()
 
 
+func _register_staccato_hit() -> void:
+
+	if time_since_last_attack >= staccato_min_interval \
+	and time_since_last_attack <= staccato_max_interval:
+		combo_count = min(combo_count + 1, staccato_max_combo)
+	else:
+		combo_count = 1
+
+	combo_multiplier = 1.0 + (combo_count - 1) * staccato_damage_step
+	time_since_last_attack = 0.0
+	combo_changed.emit(combo_count)
+	AudioManager.register_combo_hit(combo_count, combo_multiplier) 
+
+func _reset_combo() -> void:
+	combo_count = 0
+	combo_multiplier = 1.0
+	combo_changed.emit(combo_count)
+
+
 func _start_attack() -> void:
 	is_attacking = true
 	attack_cooldown_timer = attack_cooldown
 	attack_active_timer = attack_active_time
+	hitbox.damage = int(round(base_attack_damage * combo_multiplier))
 	hitbox.hitbox_on()
 	attack_started.emit()
 
@@ -574,6 +616,7 @@ func _set_state(state: State, force: bool = false) -> void:
 	current_state = state
 	state_changed.emit(previous, current_state)
 	enter_state()
+	AudioManager.set_state(State.keys()[current_state]) 
 
 func enter_state() -> void:
 	match current_state:
@@ -658,7 +701,7 @@ func update_animation(input_dir: float) -> void:
 		State.WALL_JUMP: animated_sprite.play("jump")
 		State.ATTACK: animated_sprite.play("attack")
 		State.HURT: animated_sprite.play("hurt")
-		State.DEAD: animated_sprite.play("die")
+		State.DEAD: animated_sprite.play("dead")
 
 	_update_animation_speed()
 
@@ -764,6 +807,7 @@ func _apply_damage_effects(hitbox: Hitbox) -> void:
 	flash.start_flash()
 	_apply_knockback(hitbox)
 	flow = max(flow - 30, 0)
+	AudioManager.register_damage()
 
 func _apply_knockback(hitbox: Hitbox) -> void:
 	var direction = (global_position - hitbox.global_position).normalized()
@@ -786,11 +830,13 @@ func _on_died() -> void:
 		hurtbox.monitoring = false
 		hurtbox.monitorable = false
 		# Forzar animación de muerte
-		animated_sprite.play("die")
+		animated_sprite.play("dead")
 
 func debug():
 	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_PAGEDOWN):
 		flow = 100.0
+	if OS.is_debug_build() and Input.is_physical_key_pressed(KEY_F2):
+		get_tree().reload_current_scene()
 
 func _update_health_bar(current: int, max_health: int) -> void:
 	if health_bar:
@@ -800,6 +846,6 @@ func _update_health_bar(current: int, max_health: int) -> void:
 
 
 func _on_animation_finished() -> void:
-	if animated_sprite.animation == "die":
+	if animated_sprite.animation == "dead":
 			# Reiniciar la escena (o mostrar pantalla de game over)
 			get_tree().reload_current_scene()
