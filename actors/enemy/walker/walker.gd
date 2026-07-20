@@ -57,12 +57,14 @@ func check_chase():
 func _on_attack_range_body_entered(body: Node2D) -> void:
 	if body.is_in_group("Player"):
 		player_in_attack_range = true
-		change_state(State.ATTACK)
+		if current_state != State.DEAD and current_state != State.HIT:
+			change_state(State.ATTACK)
 
 func _on_attack_range_body_exited(body: Node2D) -> void:
 	if body.is_in_group("Player"):
 		player_in_attack_range = false
-		change_state(State.CHASE)
+		if current_state != State.DEAD and current_state != State.HIT:
+			change_state(State.CHASE)
 	
 func check_patrol():
 

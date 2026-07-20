@@ -10,9 +10,9 @@ signal damage_taken()
 
 # Sonidos pregrabados
 var sfx := {
-    "player_hit": preload("res://audio/sfx/player/hit.wav"),
-    "player_jump": preload("res://audio/sfx/player/jump.wav"),
-    "enemy_hit": preload("res://audio/sfx/enemy/hit.wav")
+	"player_hit": preload("res://audio/sfx/player/hit.wav"),
+	"player_jump": preload("res://audio/sfx/player/jump.wav"),
+	"enemy_hit": preload("res://audio/sfx/enemy/hit.wav")
 }
 
 # El motor musical
