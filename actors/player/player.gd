@@ -207,7 +207,7 @@ func _ready() -> void:
 		AudioManager.connect_signals(self)
 		AudioManager.update_flow(flow)
 		# Convertir estado enum a string para el AudioManager
-		AudioManager._on_state_changed(null, current_state)
+		AudioManager.set_state(State.keys()[current_state])
 
 # ============================================================
 #  LOOP PRINCIPAL — el orden acá importa, es la secuencia real
@@ -810,7 +810,7 @@ func _apply_damage_effects(hitbox: Hitbox) -> void:
 	_apply_knockback(hitbox)
 	flow = max(flow - 30, 0)
 	if AudioManager:
-		AudioManager._on_damage_taken()
+		AudioManager.register_damage()
 
 func _apply_knockback(hitbox: Hitbox) -> void:
 	var direction = (global_position - hitbox.global_position).normalized()
