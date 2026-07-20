@@ -8,9 +8,9 @@ var effect_layer
 
 func _ready():
 	# Cargar capas de forma segura
-	var AmbientLayer = load("res://music/layers/AmbientLayer.gd")
-	var MelodyLayer = load("res://music/layers/MelodyLayer.gd")
-	var EffectLayer = load("res://music/layers/EffectLayer.gd")
+	var AmbientLayer = load("res://audio/layers/AmbientLayer.gd")
+	var MelodyLayer = load("res://audio/layers/MelodyLayer.gd")
+	var EffectLayer = load("res://audio/layers/EffectLayer.gd")
 	
 	if AmbientLayer:
 		ambient_layer = AmbientLayer.new()
