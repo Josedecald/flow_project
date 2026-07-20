@@ -25,13 +25,13 @@ func set_bpm(bpm: int):
 func update_flow(value: float):
 	flow = value
 
-func on_state_change(new_state: String):
-	state = new_state
-
 func on_beat(beat: int):
 	# Si el estado es HURT, reproducir un sonido de "desafinado" rítmico
 	if state == "HURT" and beat % 2 == 0:
 		play_dissonant_note()
+
+func on_state_change(new_state: String):
+	state = new_state
 
 func trigger_damage_effect():
 	damage_effect_active = true

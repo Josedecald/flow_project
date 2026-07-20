@@ -26,6 +26,10 @@ func set_bpm(bpm: int):
 func update_flow(value: float):
 	flow = value
 
+func on_beat(beat: int):
+	# MelodyLayer puede reaccionar al beat si se desea en el futuro
+	pass
+
 func on_combo_hit(combo: int, multiplier: float):
 	combo_count = combo
 	# Avanzar en la escala
