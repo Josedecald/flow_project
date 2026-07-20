@@ -202,10 +202,12 @@ func _ready() -> void:
 		health_bar.visible = health.current_health > 0
 	
 	# Conectar con el AudioManager (que debe estar registrado como Autoload)
-	AudioManager.connect_signals(self)
-	# Opcional: enviar el estado inicial
-	AudioManager.update_flow(flow)
-	AudioManager.set_state(State.keys()[current_state])
+	# Conectar señales de audio
+	if AudioManager:
+		AudioManager.connect_signals(self)
+		AudioManager.update_flow(flow)
+		# Convertir estado enum a string para el AudioManager
+		AudioManager._on_state_changed(null, current_state)
 
 # ============================================================
 #  LOOP PRINCIPAL — el orden acá importa, es la secuencia real
@@ -807,7 +809,8 @@ func _apply_damage_effects(hitbox: Hitbox) -> void:
 	flash.start_flash()
 	_apply_knockback(hitbox)
 	flow = max(flow - 30, 0)
-	AudioManager.register_damage()
+	if AudioManager:
+		AudioManager._on_damage_taken()
 
 func _apply_knockback(hitbox: Hitbox) -> void:
 	var direction = (global_position - hitbox.global_position).normalized()
