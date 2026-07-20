@@ -180,11 +180,6 @@ var last_y := 0.0
 @onready var flash: Flash = $Components/Flash
 @onready var health_bar: ProgressBar = $HealthBar # Asegúrate que el nodo tiene este nombre
 
-signal music_flow_updated(flow: float)
-signal music_combo_hit(combo: int, multiplier: float)
-signal music_state_changed(state: String)
-signal music_damage_taken()
-
 func _ready() -> void:
 	sprite_scale = animated_sprite.scale
 	target_sprite_scale = sprite_scale
@@ -200,14 +195,6 @@ func _ready() -> void:
 		health_bar.max_value = health.max_health
 		health_bar.value = health.current_health
 		health_bar.visible = health.current_health > 0
-	
-	# Conectar con el AudioManager (que debe estar registrado como Autoload)
-	# Conectar señales de audio
-	if AudioManager:
-		AudioManager.connect_signals(self)
-		AudioManager.update_flow(flow)
-		# Convertir estado enum a string para el AudioManager
-		AudioManager.set_state(State.keys()[current_state])
 
 # ============================================================
 #  LOOP PRINCIPAL — el orden acá importa, es la secuencia real
@@ -266,7 +253,6 @@ func update_flow(delta: float, on_floor: bool, velocity_x: float, input_pressed:
 	_apply_flow_gain(delta, on_floor, velocity_x, input_pressed)
 	flow = clamp(flow, 0, 100)
 	flow_changed.emit(flow)
-	AudioManager.update_flow(flow)  
 
 func _apply_flow_decay(delta: float, velocity_x: float) -> void:
 	# Solo decae naturalmente cuando no estás moviéndote
@@ -538,7 +524,6 @@ func _register_staccato_hit() -> void:
 	combo_multiplier = 1.0 + (combo_count - 1) * staccato_damage_step
 	time_since_last_attack = 0.0
 	combo_changed.emit(combo_count)
-	AudioManager.register_combo_hit(combo_count, combo_multiplier) 
 
 func _reset_combo() -> void:
 	combo_count = 0
@@ -618,7 +603,6 @@ func _set_state(state: State, force: bool = false) -> void:
 	current_state = state
 	state_changed.emit(previous, current_state)
 	enter_state()
-	AudioManager.set_state(State.keys()[current_state]) 
 
 func enter_state() -> void:
 	match current_state:
@@ -809,8 +793,6 @@ func _apply_damage_effects(hitbox: Hitbox) -> void:
 	flash.start_flash()
 	_apply_knockback(hitbox)
 	flow = max(flow - 30, 0)
-	if AudioManager:
-		AudioManager.register_damage()
 
 func _apply_knockback(hitbox: Hitbox) -> void:
 	var direction = (global_position - hitbox.global_position).normalized()
