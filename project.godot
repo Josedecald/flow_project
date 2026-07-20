@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 HitStop="*res://Scripts/hit_stop.gd"
 DebugOverlay="*res://Scripts/debug_overlay.gd"
+AudioManager="*res://autoloads/AudioManager.gd"
 
 [display]
 
