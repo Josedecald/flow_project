@@ -8,10 +8,17 @@ signal combo_hit(combo: int, multiplier: float)
 signal state_updated(state: String)
 signal damage_taken()
 
+# Sonidos pregrabados
+var sfx := {
+    "player_hit": preload("res://audio/sfx/player/hit.wav"),
+    "player_jump": preload("res://audio/sfx/player/jump.wav"),
+    "enemy_hit": preload("res://audio/sfx/enemy/hit.wav")
+}
+
 # El motor musical
-# Cargar los scripts ANTES de usarlos
 const MusicEngine = preload("res://audio/MusicEngine.gd")
 var music_engine
+var sfx_players := []
 
 # Configuración rítmica
 var bpm: int = 120
@@ -54,6 +61,25 @@ func set_state(state: String):
 func register_damage():
 	damage_taken.emit()
 	music_engine.on_damage_taken()
+	play_sfx("player_hit")
+
+func play_sfx(sfx_name: String, volume: float = 0.8) -> void:
+	if not sfx.has(sfx_name):
+		return
+	
+	var player = AudioStreamPlayer.new()
+	player.stream = sfx[sfx_name]
+	player.volume_db = linear_to_db(volume)
+	player.bus = "SFX"
+	add_child(player)
+	player.play()
+	sfx_players.append(player)
+	
+	# Limpiar players terminados
+	for p in sfx_players:
+		if not p.playing:
+			p.queue_free()
+			sfx_players.erase(p)
 
 func set_bpm(new_bpm: int):
 	bpm = new_bpm
